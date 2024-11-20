@@ -22,7 +22,7 @@ def get_bus_info(message: str) -> str:
 @app.post("/api/chat",response_model=ChatResponse,status_code=200)
 async def chat(request: ChatRequest):
     if not request.message.strip():
-        raise HTTPException(status_code=400, detail="입력값이 유효하지 않습니다.")
+         return "죄송합니다. 요청하신 정보를 처리할 수 없습니다."
     response_message = get_bus_info(request.message)
     print(f"Response message: {response_message}") # 로그
     return {"message": response_message}
