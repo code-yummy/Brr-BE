@@ -54,7 +54,7 @@ def signup(user_request: UserRequest):
     raise HTTPException(status_code=400, detail="회원가입 실패")
 
 
-@app.post("/api/users/login")
+@app.post("/api/users/login", status_code=201)
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user_id = form_data.username
     password = form_data.password
@@ -139,27 +139,3 @@ def get_post(post_id: int):
     return response
 
 
-@app.put("/api/posts/{post_id}", status_code=200)
-def update_post(post_id: int, post_request: PostRequest, token: str = Depends(oauth2_scheme)):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None or user_id != post_request.userId:
-            raise HTTPException(status_code=401, detail="권한이 없습니다.")
-    except JWTError:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
-    if not post_service.read_post(post_id) or not post_service.update_post(post_id, post_request.title, post_request.body, user_id):
-        raise HTTPException(status_code=400, detail="게시글 수정 실패")
-    return {"message": "게시글 수정 성공"}
-
-
-@app.delete("/api/posts/{post_id}", status_code=200)
-def delete_post(post_id: int, token: str = Depends(oauth2_scheme)):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-    except JWTError:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
-    if not post_service.delete_post(post_id, user_id):
-        raise HTTPException(status_code=400, detail="게시글 삭제 실패")
-    return {"message": "게시글 삭제 성공"}
