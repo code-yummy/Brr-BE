@@ -1,6 +1,14 @@
-from fastapi import HTTPException
+from fastapi import APIRouter,HTTPException
 from pydantic import BaseModel
 import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+router = APIRouter()
 
 class ChatRequest(BaseModel):
     message: str ="AI융합대학에서 시내로 가려고 합니다."
@@ -8,11 +16,6 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     message: str
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
 
 def get_bus_info(message: str) -> str:
     logger.info(f"Received message: {message}")  # 로그
@@ -23,7 +26,7 @@ def get_bus_info(message: str) -> str:
     logger.warning(f"Could not process message: {message}")  #경고 로그
     return "죄송합니다. 요청하신 정보를 처리할 수 없습니다."
 
-@app.post("/api/chat",response_model=ChatResponse,status_code=200)
+@router.post("/",response_model=ChatResponse,status_code=200)
 async def chat(request: ChatRequest):
     if not request.message.strip():
         logger.error("Empty message received.") #에러 로그
