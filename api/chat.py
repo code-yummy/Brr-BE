@@ -1,14 +1,6 @@
-from fastapi import FastAPI,HTTPException
+from fastapi import HTTPException
 from pydantic import BaseModel
 import logging
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
-
-app = FastAPI()
 
 class ChatRequest(BaseModel):
     message: str ="AI융합대학에서 시내로 가려고 합니다."
@@ -16,10 +8,11 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     message: str
 
-@app.get("/")
-async def root():
-    logger.info("Root endpoint accessed.")
-    return {"message": "Real time Bus Chat Service"}
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 def get_bus_info(message: str) -> str:
     logger.info(f"Received message: {message}")  # 로그
